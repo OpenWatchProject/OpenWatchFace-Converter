@@ -1,6 +1,7 @@
 package com.openwatchproject.watchfaceconverter;
 
 import com.openwatchproject.watchfaceconverter.model.ClockSkinType;
+import com.openwatchproject.watchfaceconverter.model.OpenWatchWatchFaceMetadata;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -33,13 +34,17 @@ public class Controller implements Initializable {
     @FXML
     private Button outputFolderBrowseButton;
     @FXML
-    private Button convertButton;
-    @FXML
     private TextArea logTextArea;
     @FXML
     private TextField originalWidthTextField;
     @FXML
     private TextField originalHeightTextField;
+    @FXML
+    private TextField metadataNameTextField;
+    @FXML
+    private TextField metadataVersionTextField;
+    @FXML
+    private TextField metadataAuthorTextField;
 
     private Converter converter;
 
@@ -103,7 +108,12 @@ public class Controller implements Initializable {
             height = Integer.parseInt(originalHeightTextField.getText());
         }
 
-        String filePath = converter.convert(inputFolder, outputFolder, type, width, height);
+        int metadataVersion = 1;
+        if (!metadataVersionTextField.getText().isEmpty()) {
+            metadataVersion = Integer.parseInt(metadataVersionTextField.getText());
+        }
+        OpenWatchWatchFaceMetadata metadata = new OpenWatchWatchFaceMetadata(metadataNameTextField.getText(), metadataAuthorTextField.getText(), metadataVersion);
+        String filePath = converter.convert(inputFolder, outputFolder, type, width, height, metadata);
         if (filePath == null) {
             log(LOGGER, logTextArea, Level.SEVERE, "A problem ocurred while converting the ClockSkin.");
             showError("A problem ocurred while converting the ClockSkin.", "Make sure you've selected the right original ClockSkin folder and launcher type!");

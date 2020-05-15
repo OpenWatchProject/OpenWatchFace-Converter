@@ -25,8 +25,10 @@
             <rowConstraints>
                 <RowConstraints vgrow="SOMETIMES" />
                 <RowConstraints vgrow="SOMETIMES" />
-         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints vgrow="SOMETIMES" />
                 <RowConstraints vgrow="SOMETIMES" />
+         <RowConstraints vgrow="SOMETIMES" />
+         <RowConstraints vgrow="SOMETIMES" />
                 <RowConstraints vgrow="SOMETIMES" />
             </rowConstraints>
             <VBox.margin>
@@ -81,6 +83,29 @@
                </HBox.margin>
             </Label>
             <TextField fx:id="originalHeightTextField" promptText="400" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <Label text="WatchFace Metadata:" GridPane.rowIndex="4" />
+      <Label text="WatchFace Author:" GridPane.rowIndex="5" />
+      <TextField fx:id="metadataAuthorTextField" promptText="Unknown" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <HBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="4">
+         <children>
+            <Label text="Name" HBox.hgrow="NEVER">
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="metadataNameTextField" promptText="(required)" HBox.hgrow="ALWAYS">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </TextField>
+            <Label text="Version" HBox.hgrow="NEVER">
+               <HBox.margin>
+                  <Insets right="5.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="metadataVersionTextField" promptText="1" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
         </GridPane>

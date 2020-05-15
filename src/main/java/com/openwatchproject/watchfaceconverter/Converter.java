@@ -26,7 +26,7 @@ public class Converter {
         this.clockSkinParser = new ClockSkinParser(logTextArea);
     }
 
-    public String convert(File inputFolder, File outputFolder, ClockSkinType type, int width, int height) {
+    public String convert(File inputFolder, File outputFolder, ClockSkinType type, int width, int height, OpenWatchWatchFaceMetadata metadata) {
         String filename = inputFolder.getName() + EXTENSION;
         File outputFile = new File(outputFolder, filename);
 
@@ -44,10 +44,12 @@ public class Converter {
         try {
             switch (type) {
                 case STOCK:
-                    convertStock(inputFolder, outputFile, clockSkin, owwf);
+                    log(LOGGER, logTextArea, Level.INFO, "Using stock type...");
+                    convertStock(inputFolder, outputFile, metadata, clockSkin, owwf);
                     break;
                 case ERICS:
-                    convertErics(inputFolder, outputFile, clockSkin, owwf);
+                    log(LOGGER, logTextArea, Level.INFO, "Using Eric's type...");
+                    convertErics(inputFolder, outputFile, metadata, clockSkin, owwf);
                     break;
             }
         } catch (IOException e) {
@@ -57,7 +59,8 @@ public class Converter {
         return outputFile.getAbsolutePath();
     }
 
-    private void convertStock(File inputFolder, File outputFile, ClockSkin clockSkin, OpenWatchWatchFace owwf) throws IOException {
+    private void convertStock(File inputFolder, File outputFile, OpenWatchWatchFaceMetadata metadata, ClockSkin clockSkin, OpenWatchWatchFace owwf) throws IOException {
+        int direction = 0;
         for (ClockSkinItem csItem : clockSkin.getClockSkinItems()) {
             OpenWatchWatchFace.Item item = new OpenWatchWatchFace.Item();
 
@@ -70,22 +73,34 @@ public class Converter {
                 continue;
             }
 
-            item.setType(csItem.arrayType);
+            if (csItem.arrayType == 0 && csItem.rotate == 0) {
+                item.setType(-1);
+            } else {
+                item.setType(csItem.arrayType);
+            }
             item.setCenterX(csItem.centerX);
             item.setCenterY(csItem.centerY);
-            item.setDirection(csItem.direction);
+            if (csItem.direction == ClockSkinConstants.DIRECTION_REVERSE) {
+                if (direction == 0) {
+                    direction = 1;
+                } else {
+                    direction = 0;
+                }
+            }
+            item.setDirection(direction);
             item.setPackageName(csItem.packageName);
             item.setClassName(csItem.className);
-            item.setRadius(csItem.range);
+            item.setRange(csItem.range);
             item.setRotationFactor(csItem.mulRotate);
+            item.setRotatableType(csItem.rotate);
 
             owwf.addItem(item);
         }
 
-        exportWatchFace(inputFolder, outputFile, owwf);
+        exportWatchFace(inputFolder, outputFile, metadata, owwf);
     }
 
-    private void convertErics(File inputFolder, File outputFile, ClockSkin clockSkin, OpenWatchWatchFace owwf) throws IOException {
+    private void convertErics(File inputFolder, File outputFile, OpenWatchWatchFaceMetadata metadata, ClockSkin clockSkin, OpenWatchWatchFace owwf) throws IOException {
         for (ClockSkinItem csItem : clockSkin.getClockSkinItems()) {
             OpenWatchWatchFace.Item item = new OpenWatchWatchFace.Item();
 
@@ -98,25 +113,31 @@ public class Converter {
                 continue;
             }
 
-            item.setType(csItem.arrayType);
+            if (csItem.arrayType == 0 && csItem.rotate == 0) {
+                item.setType(-1);
+            } else {
+                item.setType(csItem.arrayType);
+            }
             item.setCenterX(csItem.centerX);
             item.setCenterY(csItem.centerY);
-            item.setDirection(csItem.direction);
+            item.setDirection(csItem.direction - 1);
             item.setPackageName(csItem.packageName);
             item.setClassName(csItem.className);
-            item.setRadius(csItem.range);
+            item.setRange(csItem.range);
             item.setRotationFactor(csItem.mulRotate);
+            item.setRotatableType(csItem.rotate);
 
             owwf.addItem(item);
         }
 
-        exportWatchFace(inputFolder, outputFile, owwf);
+        exportWatchFace(inputFolder, outputFile, metadata, owwf);
     }
 
-    private boolean exportWatchFace(File inputFolder, File outputFile, OpenWatchWatchFace owwf) throws IOException {
+    private boolean exportWatchFace(File inputFolder, File outputFile, OpenWatchWatchFaceMetadata metadata, OpenWatchWatchFace owwf) throws IOException {
         File tmpDir = Files.createTempDirectory(null).toFile();
 
         writeToFile(new File(tmpDir, "watchface.json"), new Gson().toJson(owwf));
+        writeToFile(new File(tmpDir, "metadata.json"), new Gson().toJson(metadata));
         Files.copy(new File(inputFolder, "clock_skin_model.png").toPath(), new File(tmpDir, "preview.png").toPath(), REPLACE_EXISTING);
 
         for (OpenWatchWatchFace.Item item : owwf.getItems()) {

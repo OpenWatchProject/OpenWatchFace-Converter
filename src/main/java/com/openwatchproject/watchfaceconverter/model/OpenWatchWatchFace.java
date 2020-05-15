@@ -5,6 +5,11 @@ import java.util.List;
 
 public class OpenWatchWatchFace {
     /**
+     * The OpenWatch WatchFace format version
+     */
+    private static final int VERSION = 1;
+
+    /**
      * The height in pixels for which this WatchFace was designed for.
      */
     private int height = 400;
@@ -101,6 +106,12 @@ public class OpenWatchWatchFace {
         private int rotationFactor;
 
         /**
+         * Indicates the rotatable type.
+         * This is only valid if type is rotatable!
+         */
+        private int rotatableType;
+
+        /**
          * An array of frames that need to be displayed
          * Frame count must be at least 1. If it's greater than 1, it's an animation.
          */
@@ -108,9 +119,7 @@ public class OpenWatchWatchFace {
 
         private int color;
         private String colorArray;
-        private String drawable;
         private float offsetAngle;
-        private int rotate;
         private int startAngle;
         private int textSize;
         private int duration;
@@ -123,7 +132,6 @@ public class OpenWatchWatchFace {
         private String pictureShadow;
         private int frameDuration;
         private String childFolder;
-        private List<String> drawables;
         private float angle;
         private int width;
         private int radius;
@@ -158,12 +166,16 @@ public class OpenWatchWatchFace {
             this.className = className;
         }
 
-        public void setRadius(int radius) {
-            this.radius = radius;
+        public void setRange(int range) {
+            this.range = range;
         }
 
         public void setRotationFactor(int rotationFactor) {
             this.rotationFactor = rotationFactor;
+        }
+
+        public void setRotatableType(int rotatableType) {
+            this.rotatableType = rotatableType;
         }
 
         public void addFrame(String frame) {
